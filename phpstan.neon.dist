@@ -1,5 +1,5 @@
 parameters:
-  level: 8
+  level: max
   # Analyse against the lowest supported PHP version, on every PHP version.
   phpVersion: 80300
   paths:

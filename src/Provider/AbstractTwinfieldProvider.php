@@ -75,7 +75,7 @@ abstract class AbstractTwinfieldProvider extends AbstractProvider
      * Drops `approval_prompt`, a Google-specific parameter League adds by default.
      *
      * @param array<string, mixed> $options
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     protected function getAuthorizationParameters(array $options): array
     {
