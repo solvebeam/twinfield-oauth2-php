@@ -43,9 +43,9 @@ abstract class AbstractTwinfieldProvider extends AbstractProvider
      */
     public function getAccessTokenValidation(AccessTokenInterface $token): AccessTokenValidation
     {
-        $tokenValue = trim($token->getToken());
+        $tokenValue = $token->getToken();
 
-        if ($tokenValue === '') {
+        if (trim($tokenValue) === '') {
             throw new IdentityProviderException('Access token is missing', 0, ['error' => 'token_missing']);
         }
 
