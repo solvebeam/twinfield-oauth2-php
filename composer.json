@@ -4,8 +4,16 @@
   "license": "MIT",
   "authors": [
     {
+      "name": "SolveBeam",
+      "email": "info@solvebeam.com",
+      "homepage": "https://www.solvebeam.com/",
+      "role": "Company"
+    },
+    {
       "name": "Remco Tolsma",
-      "email": "remco@solvebeam.com"
+      "email": "remco@solvebeam.com",
+      "homepage": "https://www.remcotolsma.nl/",
+      "role": "Developer"
     }
   ],
   "support": {
