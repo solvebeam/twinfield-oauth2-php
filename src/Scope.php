@@ -12,7 +12,7 @@ namespace SolveBeam\Twinfield\OAuth2;
  * them ("The authorization scopes required for this operation are: …"). Without it the REST API
  * answers HTTP 403. Your OAuth client must be allowed to request a scope.
  *
- *   $provider->getAuthorizationUrl(['scope' => Scope::values(...Scope::identity(), Scope::ReadVat)]);
+ *   $provider->getAuthorizationUrl(['scope' => Scope::values(Scope::ReadVat, ...Scope::identity())]);
  *
  * @see https://developers.twinfield.com/documentation/api/authentication/openid-connect-auth
  * @see https://api.accounting.twinfield.com/Api/swagger/ui/index
