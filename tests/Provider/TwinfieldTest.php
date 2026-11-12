@@ -24,7 +24,7 @@ final class TwinfieldTest extends TestCase
     public function testBuildsTheAuthorizationUrl(): void
     {
         $provider = $this->provider();
-        $url = $provider->getAuthorizationUrl(['scope' => Scope::values(...Scope::identity())]);
+        $url = $provider->getAuthorizationUrl(['scope' => Scope::values(Scope::ReadVat, ...Scope::identity())]);
 
         parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
 
@@ -32,9 +32,19 @@ final class TwinfieldTest extends TestCase
         self::assertSame('client', $query['client_id']);
         self::assertSame('code', $query['response_type']);
         self::assertSame('https://example.com/callback', $query['redirect_uri']);
-        self::assertSame('openid twf.user twf.organisation twf.organisationUser offline_access', $query['scope']);
+        self::assertSame(
+            'readVat openid twf.user twf.organisation twf.organisationUser offline_access',
+            $query['scope'],
+        );
         self::assertSame($provider->getState(), $query['state']);
         self::assertArrayNotHasKey('approval_prompt', $query);
+    }
+
+    public function testRequestsTheIdentityScopesByDefault(): void
+    {
+        parse_str((string) parse_url($this->provider()->getAuthorizationUrl(), PHP_URL_QUERY), $query);
+
+        self::assertSame('openid twf.user twf.organisation twf.organisationUser offline_access', $query['scope']);
     }
 
     public function testRequestsAnAccessToken(): void

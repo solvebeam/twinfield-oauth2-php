@@ -23,7 +23,6 @@ Requires PHP 8.3 or higher.
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use SolveBeam\Twinfield\OAuth2\Provider\Twinfield;
-use SolveBeam\Twinfield\OAuth2\Scope;
 
 session_start();
 
@@ -36,7 +35,6 @@ $provider = new Twinfield([
 if (!isset($_GET['code'])) {
     // 1. Send the user to the Twinfield login.
     $url = $provider->getAuthorizationUrl([
-        'scope' => Scope::values(...Scope::identity()),
         'nonce' => bin2hex(random_bytes(16)),
     ]);
 
@@ -110,9 +108,9 @@ echo $owner->organisationId, PHP_EOL;
 
 ## Scopes
 
-The provider requests no scopes by default. The `Scope` enum has all scopes of Twinfield.
+The `Scope` enum has all scopes of Twinfield.
 
-`Scope::identity()` gives the scopes that identify the user and keep the session. Every Twinfield API needs them:
+`Scope::identity()` gives the scopes that identify the user and keep the session. Every Twinfield API needs them, so the provider requests them when you pass no `scope`:
 
 | Scope | Case | Description |
 |-------|------|-------------|
@@ -122,11 +120,13 @@ The provider requests no scopes by default. The `Scope` enum has all scopes of T
 | `twf.organisationUser` | `Scope::OrganisationUser` | User code in the organisation. Mandatory to log in. |
 | `offline_access` | `Scope::OfflineAccess` | Needed to get a refresh token. |
 
-`Scope::rest()` gives the scopes of the Twinfield REST API, such as `readVat` and `writeArticles`. Each REST operation needs one of them on top of the identity scopes, and your client must be allowed to request it.
+`Scope::rest()` gives the scopes of the Twinfield REST API, such as `readVat` and `writeArticles`. Each REST operation needs one of them on top of the identity scopes, and your client must be allowed to request it. A `scope` you pass replaces the default, so include the identity scopes:
 
 ```php
+use SolveBeam\Twinfield\OAuth2\Scope;
+
 $url = $provider->getAuthorizationUrl([
-    'scope' => Scope::values(...Scope::identity(), Scope::ReadVat),
+    'scope' => Scope::values(Scope::ReadVat, ...Scope::identity()),
 ]);
 ```
 

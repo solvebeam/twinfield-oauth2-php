@@ -11,6 +11,7 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 use SolveBeam\Twinfield\OAuth2\AccessTokenValidation;
+use SolveBeam\Twinfield\OAuth2\Scope;
 use SolveBeam\Twinfield\OAuth2\UnexpectedResponseException;
 
 /**
@@ -69,11 +70,13 @@ abstract class AbstractTwinfieldProvider extends AbstractProvider
     }
 
     /**
+     * The identity scopes: Twinfield does not log in without them.
+     *
      * @return list<string>
      */
     protected function getDefaultScopes(): array
     {
-        return [];
+        return Scope::values(...Scope::identity());
     }
 
     /**
