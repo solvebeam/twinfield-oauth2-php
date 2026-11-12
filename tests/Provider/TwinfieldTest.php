@@ -75,9 +75,52 @@ final class TwinfieldTest extends TestCase
     {
         $provider = $this->provider(self::json(['error' => 'invalid_grant'], 400));
 
+        try {
+            $provider->getAccessToken('authorization_code', ['code' => 'expired']);
+
+            self::fail('No exception was thrown.');
+        } catch (IdentityProviderException $exception) {
+            self::assertSame('invalid_grant', $exception->getMessage());
+            self::assertSame(400, $exception->getCode());
+            self::assertSame(['error' => 'invalid_grant'], $exception->getResponseBody());
+        }
+    }
+
+    public function testPrefersTheErrorDescription(): void
+    {
+        $provider = $this->provider(self::json(
+            ['error' => 'invalid_grant', 'error_description' => 'The code has expired.'],
+            400,
+        ));
+
         $this->expectException(IdentityProviderException::class);
+        $this->expectExceptionMessage('The code has expired.');
 
         $provider->getAccessToken('authorization_code', ['code' => 'expired']);
+    }
+
+    public function testThrowsWhenTwinfieldRejectsTheAccessToken(): void
+    {
+        $provider = $this->provider(self::json(['message' => 'invalid_token'], 400));
+
+        $this->expectException(IdentityProviderException::class);
+        $this->expectExceptionMessage('invalid_token');
+
+        $provider->getAccessTokenValidation(new AccessToken(['access_token' => 'access-1']));
+    }
+
+    public function testThrowsOnAnErrorThatIsNotJson(): void
+    {
+        $provider = $this->provider(new Response(502, ['Content-Type' => 'text/html'], '<html></html>'));
+
+        try {
+            $provider->getAccessTokenValidation(new AccessToken(['access_token' => 'access-1']));
+
+            self::fail('No exception was thrown.');
+        } catch (IdentityProviderException $exception) {
+            self::assertSame('Bad Gateway', $exception->getMessage());
+            self::assertSame('<html></html>', $exception->getResponseBody());
+        }
     }
 
     public function testValidatesAnAccessToken(): void

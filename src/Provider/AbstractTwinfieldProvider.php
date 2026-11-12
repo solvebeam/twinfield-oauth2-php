@@ -51,16 +51,8 @@ abstract class AbstractTwinfieldProvider extends AbstractProvider
 
         $url = self::ACCESS_TOKEN_VALIDATION_URL . '?token=' . rawurlencode($tokenValue);
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
-        $response = $this->getResponse($request);
-        /**
-         * League documents parseResponse() as returning an array, but it returns the body as a
-         * string when it is not JSON.
-         *
-         * @var array<mixed>|string $data
-         */
-        $data = $this->parseResponse($response);
-
-        $this->checkResponse($response, $data);
+        // Also turns an HTTP error into an IdentityProviderException, see checkResponse().
+        $data = $this->getParsedResponse($request);
 
         if (!is_array($data)) {
             throw new UnexpectedResponseException('Access token validation did not return a JSON object.');
@@ -109,12 +101,24 @@ abstract class AbstractTwinfieldProvider extends AbstractProvider
     {
         $statusCode = $response->getStatusCode();
 
-        if ($statusCode >= 400) {
-            $message = $data['error_description'] ?? $data['message'] ?? $response->getReasonPhrase();
-            $error = $data['error'] ?? (string) $statusCode;
-
-            throw new IdentityProviderException($message, $statusCode, ['error' => $error]);
+        if ($statusCode < 400) {
+            return;
         }
+
+        $message = $response->getReasonPhrase();
+
+        // Twinfield often answers with only an error code, e.g. `{"error": "invalid_grant"}`.
+        foreach (['error_description', 'message', 'error'] as $key) {
+            $value = is_array($data) ? ($data[$key] ?? null) : null;
+
+            if (is_string($value) && $value !== '') {
+                $message = $value;
+
+                break;
+            }
+        }
+
+        throw new IdentityProviderException($message, $statusCode, $data);
     }
 
     /**
