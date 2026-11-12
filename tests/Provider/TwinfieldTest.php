@@ -71,6 +71,24 @@ final class TwinfieldTest extends TestCase
         self::assertSame('secret', $body['client_secret']);
     }
 
+    public function testRefreshesAnAccessToken(): void
+    {
+        $provider = $this->provider(self::json([
+            'access_token' => 'access-2',
+            'expires_in' => 3600,
+            'token_type' => 'Bearer',
+        ]));
+
+        $token = $provider->getAccessToken('refresh_token', ['refresh_token' => 'refresh-1']);
+
+        parse_str((string) $this->lastRequest()->getBody(), $body);
+
+        self::assertSame('access-2', $token->getToken());
+        self::assertNull($token->getRefreshToken());
+        self::assertSame('refresh_token', $body['grant_type']);
+        self::assertSame('refresh-1', $body['refresh_token']);
+    }
+
     public function testThrowsWhenTwinfieldRejectsTheGrant(): void
     {
         $provider = $this->provider(self::json(['error' => 'invalid_grant'], 400));
@@ -193,7 +211,7 @@ final class TwinfieldTest extends TestCase
 
     private function provider(Response ...$responses): Twinfield
     {
-        $this->mock = new MockHandler($responses);
+        $this->mock = new MockHandler(array_values($responses));
 
         return new Twinfield(
             ['clientId' => 'client', 'clientSecret' => 'secret', 'redirectUri' => 'https://example.com/callback'],
