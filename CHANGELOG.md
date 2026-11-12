@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-12
+
 ### Added
 
 - `Twinfield` provider for `league/oauth2-client`, split off from the `solvebeam/twinfield` SDK.
@@ -15,4 +17,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The identity scopes (`Scope::identity()`) are requested when no `scope` is passed.
 - HTTP errors of Twinfield are thrown as `IdentityProviderException` with Twinfield's error as message and the response as body.
 
-[unreleased]: https://github.com/solvebeam/twinfield-oauth2-php/commits/main
+[unreleased]: https://github.com/solvebeam/twinfield-oauth2-php/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/solvebeam/twinfield-oauth2-php/releases/tag/v0.1.0
