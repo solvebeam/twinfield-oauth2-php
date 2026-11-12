@@ -69,6 +69,21 @@ final class AccessTokenValidationTest extends TestCase
         AccessTokenValidation::fromArray(['scope' => $scope] + self::RESPONSE);
     }
 
+    public function testReadsTheExpiryTimeAsTwinfieldSendsIt(): void
+    {
+        $validation = AccessTokenValidation::fromArray(['exp' => '1794165191'] + self::RESPONSE);
+
+        self::assertSame(1794165191, $validation->exp);
+    }
+
+    public function testThrowsWhenTheExpiryTimeIsNotANumber(): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        $this->expectExceptionMessage('no "exp"');
+
+        AccessTokenValidation::fromArray(['exp' => 'tomorrow'] + self::RESPONSE);
+    }
+
     /**
      * @return iterable<string, array{string, string}>
      */

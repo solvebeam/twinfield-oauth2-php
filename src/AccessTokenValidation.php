@@ -58,6 +58,11 @@ final readonly class AccessTokenValidation
     {
         $exp = $data['exp'] ?? null;
 
+        // Twinfield sends the expiry time as a string: `"exp": "1794165191"`.
+        if (is_string($exp) && ctype_digit($exp)) {
+            $exp = (int) $exp;
+        }
+
         if (!is_int($exp)) {
             throw new UnexpectedResponseException('Access token validation has no "exp" (expiry time).');
         }
