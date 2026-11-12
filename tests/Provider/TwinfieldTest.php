@@ -181,6 +181,16 @@ final class TwinfieldTest extends TestCase
         );
     }
 
+    public function testThrowsWhenTheResourceOwnerMissesAClaim(): void
+    {
+        $provider = $this->provider(self::json(['sub' => 'user-guid']));
+
+        $this->expectException(UnexpectedResponseException::class);
+        $this->expectExceptionMessage('no "twf.organisationUserCode"');
+
+        $provider->getResourceOwner(new AccessToken(['access_token' => 'access-1']));
+    }
+
     private function provider(Response ...$responses): Twinfield
     {
         $this->mock = new MockHandler($responses);

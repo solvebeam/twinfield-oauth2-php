@@ -106,6 +106,8 @@ echo $owner->organisationUserCode, PHP_EOL;
 echo $owner->organisationId, PHP_EOL;
 ```
 
+It throws an `UnexpectedResponseException` when one of these claims is missing, for the same reason as the access token validation.
+
 ## Scopes
 
 The `Scope` enum has all scopes of Twinfield.
