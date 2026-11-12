@@ -105,15 +105,28 @@ final readonly class AccessTokenValidation
     private static function scopes(array $data): array
     {
         $scope = $data['scope'] ?? null;
-        $scopes = is_string($scope) ? explode(' ', $scope) : $scope;
+        $values = is_string($scope) ? explode(' ', $scope) : $scope;
+        $scopes = [];
 
-        if (!is_array($scopes) || $scopes === [] || array_filter($scopes, is_string(...)) !== $scopes) {
+        foreach (is_array($values) ? $values : [] as $value) {
+            if (!is_string($value)) {
+                $scopes = [];
+
+                break;
+            }
+
+            if ($value !== '') {
+                $scopes[] = $value;
+            }
+        }
+
+        if ($scopes === []) {
             throw new UnexpectedResponseException(
                 'Access token validation has no "scope" with the scopes of the token.',
             );
         }
 
-        return array_values(array_filter($scopes, static fn (string $scope): bool => $scope !== ''));
+        return $scopes;
     }
 
     /**

@@ -49,15 +49,24 @@ final class AccessTokenValidationTest extends TestCase
         self::assertTrue($validation->hasScope('readVat'));
     }
 
-    public function testListsTheScopes(): void
+    /**
+     * @return iterable<string, array{mixed}>
+     */
+    public static function invalidScopes(): iterable
     {
-        self::assertSame(
-            ['openid', 'twf.user', 'twf.organisation', 'twf.organisationUser', 'offline_access'],
-            Scope::values(...Scope::identity()),
-        );
-        self::assertContains(Scope::ReadFixedAssets, Scope::rest());
-        self::assertNotContains(Scope::OpenId, Scope::rest());
-        self::assertCount(14, Scope::rest());
+        yield 'empty string' => [''];
+        yield 'empty list' => [[]];
+        yield 'not a string' => [['openid', 1]];
+        yield 'number' => [1];
+    }
+
+    #[DataProvider('invalidScopes')]
+    public function testThrowsOnAnInvalidScope(mixed $scope): void
+    {
+        $this->expectException(UnexpectedResponseException::class);
+        $this->expectExceptionMessage('no "scope"');
+
+        AccessTokenValidation::fromArray(['scope' => $scope] + self::RESPONSE);
     }
 
     /**
