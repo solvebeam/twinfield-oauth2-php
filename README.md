@@ -32,13 +32,18 @@ $provider = new Twinfield([
     'redirectUri' => 'https://example.com/callback',
 ]);
 
+if (isset($_GET['error'])) {
+    // The user cancelled, or Twinfield refused the request.
+    exit('Login failed: ' . htmlspecialchars((string) $_GET['error']));
+}
+
 if (!isset($_GET['code'])) {
     // 1. Send the user to the Twinfield login.
-    $url = $provider->getAuthorizationUrl([
-        'nonce' => bin2hex(random_bytes(16)),
-    ]);
+    $nonce = bin2hex(random_bytes(16));
+    $url = $provider->getAuthorizationUrl(['nonce' => $nonce]);
 
     $_SESSION['twinfield_state'] = $provider->getState();
+    $_SESSION['twinfield_nonce'] = $nonce;
 
     header('Location: ' . $url);
     exit;
@@ -46,7 +51,8 @@ if (!isset($_GET['code'])) {
 
 // 2. Twinfield redirects back with a code and the state.
 $state = $_SESSION['twinfield_state'] ?? '';
-unset($_SESSION['twinfield_state']);
+$nonce = $_SESSION['twinfield_nonce'] ?? '';
+unset($_SESSION['twinfield_state'], $_SESSION['twinfield_nonce']);
 
 if ($state === '' || !hash_equals($state, (string) ($_GET['state'] ?? ''))) {
     exit('Invalid state.');
@@ -57,6 +63,15 @@ try {
     $token = $provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
 } catch (IdentityProviderException $exception) {
     exit('Token request failed: ' . $exception->getMessage());
+}
+
+// The ID token must carry the nonce of this login.
+$idToken = (string) ($token->getValues()['id_token'] ?? '');
+$payload = explode('.', $idToken)[1] ?? '';
+$claims = json_decode((string) base64_decode(strtr($payload, '-_', '+/')), true);
+
+if ($nonce === '' || !hash_equals($nonce, (string) ($claims['nonce'] ?? ''))) {
+    exit('Invalid nonce.');
 }
 
 // 4. Ask Twinfield who the token belongs to and where the API is.
