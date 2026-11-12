@@ -1,0 +1,16 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- `Twinfield` provider for `league/oauth2-client`, split off from the `solvebeam/twinfield` SDK.
+- `AbstractTwinfieldProvider` as the base for other providers of Twinfield access tokens.
+- `AccessTokenValidation` with `getAccessTokenValidation()`, `TwinfieldResourceOwner` and the `Scope` enum.
+
+[unreleased]: https://github.com/solvebeam/twinfield-oauth2-php/commits/main

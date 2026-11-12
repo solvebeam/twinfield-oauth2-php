@@ -1,0 +1,58 @@
+{
+  "name": "solvebeam/oauth2-twinfield",
+  "description": "Twinfield OAuth 2.0 provider for the PHP League's OAuth 2.0 Client",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Remco Tolsma",
+      "email": "remco@solvebeam.com"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/solvebeam/twinfield-oauth2-php/issues",
+    "source": "https://github.com/solvebeam/twinfield-oauth2-php"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/solvebeam"
+    }
+  ],
+  "keywords": [
+    "twinfield",
+    "oauth",
+    "oauth2",
+    "openid connect",
+    "client",
+    "authorization",
+    "authentication",
+    "league"
+  ],
+  "autoload": {
+    "psr-4": {
+      "SolveBeam\\Twinfield\\OAuth2\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SolveBeam\\Twinfield\\OAuth2\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=8.3",
+    "league/oauth2-client": "^2.9"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.3",
+    "phpunit/phpunit": "^12",
+    "squizlabs/php_codesniffer": "^3.10"
+  },
+  "scripts": {
+    "phpcs": "phpcs",
+    "phpstan": "phpstan analyse --no-progress",
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
